@@ -1,17 +1,31 @@
 [package]
 name = "spectrogram-wasm"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Robin Lake <robin@robinlake.ca>"]
 edition = "2018"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-[features]
-default = ["console_error_panic_hook"]
+# [features]
+# default = ["console_error_panic_hook"]
 
 [dependencies]
 wasm-bindgen = "0.2.63"
+
+[dependencies.web-sys]
+version = "0.3.4"
+features = [
+  'AnalyserNode',
+  'AudioContext',
+  'AudioDestinationNode',
+  'AudioNode',
+  'AudioParam',
+  'GainNode',
+  'OscillatorNode',
+  'OscillatorType',
+]
+
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
