@@ -9,17 +9,6 @@ use web_sys::{AudioContext, OscillatorType};
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-#[wasm_bindgen]
-extern {
-    fn alert(s: &str);
-}
-
-#[wasm_bindgen]
-pub fn greet() {
-    alert("Hello, spectrogram-wasm!");
-}
-
-
 /*
  Copied from https://rustwasm.github.io/wasm-bindgen/examples/web-audio.html
  */

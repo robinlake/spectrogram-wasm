@@ -17,6 +17,9 @@
     "webpack"
   ],
   "license": "(MIT OR Apache-2.0)",
+  "dependencies": {                     
+    "spectrogram-wasm": "file:../pkg"
+  },
   "devDependencies": {
     "copy-webpack-plugin": "^5.0.0",
     "hello-wasm-pack": "^0.1.0",
