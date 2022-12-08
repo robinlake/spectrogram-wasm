@@ -3,10 +3,21 @@
   <head>
     <meta charset="utf-8">
     <title>Spectrogram</title>
+    <style>
+      .content {
+        display: grid;
+        width: 100%;
+        justify-content: center;
+        padding: 10px 0 10px 0;
+      }
+    </style>
   </head>
   <body>
     <noscript>This page contains webassembly and javascript content, please enable javascript in your browser.</noscript>
-    <h1>Hi!</h1>
+    <div class="content">
+      <h1>Hi!</h1>
+      <button id="start-spectrogram">Start Spectrogram</button>
+    </div>
     <!-- sample webaudio code -->
     <input id="play" type="button" value="⏯"/>
     (headphone users, please make sure your volume is not too loud!)

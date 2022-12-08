@@ -1,13 +1,60 @@
 mod utils;
 
 use wasm_bindgen::prelude::*;
-use web_sys::{AudioContext, OscillatorType};
+use web_sys::{AudioContext, OscillatorType, AnalyserNode, MediaStreamAudioSourceNode};
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+
+
+#[wasm_bindgen]
+pub struct Spectrogram {
+    ctx: AudioContext,
+
+    /// Overall gain (volume) control
+    gain: web_sys::GainNode,
+
+    // Analyser node for getting FFT outputs
+    analyser: Result<web_sys::AnalyserNode, JsValue>,
+
+    // Audio source, typically user's microphone
+    // source: Result<web_sys::MediaStreamAudioSourceNode, JsValue>,
+}
+
+#[wasm_bindgen]
+impl Spectrogram {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> Result<Spectrogram, JsValue> {
+        let ctx = web_sys::AudioContext::new()?;
+
+        // Create our web audio objects.
+        let gain = ctx.create_gain()?;
+        let analyser = web_sys::AnalyserNode::new(&ctx);
+        // let source = web_sys::MediaStreamAudioSourceNode::new(ctx);
+
+        // Some initial settings:
+        gain.gain().set_value(50.0);
+
+
+        // The audio source is routed through the gain node, so that
+        // it can control the overall output volume.
+        // source.connect_with_audio_node(&gain)?;
+
+        // Then connect the gain node to the AudioContext destination (aka
+        // your speakers).
+        gain.connect_with_audio_node(&ctx.destination())?;
+
+        Ok(Spectrogram {
+            ctx,
+            gain,
+            analyser,
+            // source,
+        })
+    }
+}
 
 /*
  Copied from https://rustwasm.github.io/wasm-bindgen/examples/web-audio.html
