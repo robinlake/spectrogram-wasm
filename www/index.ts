@@ -1,6 +1,20 @@
 import * as sp from "spectrogram-wasm";
 
 let fm: any = null;
+let spectrogram: any = null;
+
+const startSpectrogram = async () => {
+    const mic = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+    })
+    // return mic;
+    spectrogram = new sp.Spectrogram();
+    console.log("spectrogram: ", spectrogram);
+    spectrogram.connect_user_mic(mic);
+}
+
+const startSpectrogramButton = document.getElementById("start-spectrogram");
+startSpectrogramButton.addEventListener('click', startSpectrogram)
 
 const play_button = document.getElementById("play");
 play_button.addEventListener("click", event => {

@@ -1,7 +1,7 @@
 mod utils;
 
 use wasm_bindgen::prelude::*;
-use web_sys::{AudioContext, OscillatorType, AnalyserNode, MediaStreamAudioSourceNode};
+use web_sys::{AudioContext, OscillatorType, AnalyserNode, MediaStream, MediaStreamAudioSourceNode, MediaStreamAudioSourceOptions};
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -18,10 +18,10 @@ pub struct Spectrogram {
     gain: web_sys::GainNode,
 
     // Analyser node for getting FFT outputs
-    analyser: Result<web_sys::AnalyserNode, JsValue>,
+    analyser: web_sys::AnalyserNode,
 
     // Audio source, typically user's microphone
-    // source: Result<web_sys::MediaStreamAudioSourceNode, JsValue>,
+    // source: web_sys::MediaStreamAudioSourceNode,
 }
 
 #[wasm_bindgen]
@@ -32,8 +32,11 @@ impl Spectrogram {
 
         // Create our web audio objects.
         let gain = ctx.create_gain()?;
-        let analyser = web_sys::AnalyserNode::new(&ctx);
-        // let source = web_sys::MediaStreamAudioSourceNode::new(ctx);
+        let analyser = web_sys::AnalyserNode::new(&ctx)?;
+        // let stream = web_sys::MediaStream::new()?;
+        // let options = web_sys::MediaStreamAudioSourceOptions::new(&stream);
+        // let source = ctx.create_media_stream_source(&stream)?;
+        // let source = web_sys::MediaStreamAudioSourceNode::new(&ctx, &options);
 
         // Some initial settings:
         gain.gain().set_value(50.0);
@@ -53,6 +56,15 @@ impl Spectrogram {
             analyser,
             // source,
         })
+    }
+
+    pub fn connect_user_mic(&self, stream: MediaStream) {
+        let source = self.ctx.create_media_stream_source(&stream)
+        .expect("source connected");
+        source.connect_with_audio_node(&self.gain)
+        .expect("gain connected")
+        .connect_with_audio_node(&self.analyser);
+        // source.connect(self.gain)?.connect(self.analyser);
     }
 }
 

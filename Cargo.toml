@@ -23,6 +23,8 @@ features = [
   'AudioParam',
   'GainNode',
   'MediaStreamAudioSourceNode',
+  'MediaStream',
+  'MediaStreamAudioSourceOptions',
   'OscillatorNode',
   'OscillatorType',
 ]
