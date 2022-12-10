@@ -27,6 +27,7 @@ features = [
   'MediaStreamAudioSourceOptions',
   'OscillatorNode',
   'OscillatorType',
+  'console',
 ]
 
 

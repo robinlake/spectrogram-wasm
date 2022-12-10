@@ -1,7 +1,8 @@
+#![allow(dead_code)]
 mod utils;
 
 use wasm_bindgen::prelude::*;
-use web_sys::{AudioContext, OscillatorType, AnalyserNode, MediaStream, MediaStreamAudioSourceNode, MediaStreamAudioSourceOptions};
+use web_sys::{AudioContext, OscillatorType, AnalyserNode, MediaStream, MediaStreamAudioSourceNode, MediaStreamAudioSourceOptions, console};
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -9,6 +10,12 @@ use web_sys::{AudioContext, OscillatorType, AnalyserNode, MediaStream, MediaStre
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
+// A macro to provide `println!(..)`-style syntax for `console.log` logging.
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
 
 #[wasm_bindgen]
 pub struct Spectrogram {
@@ -21,30 +28,29 @@ pub struct Spectrogram {
     analyser: web_sys::AnalyserNode,
 
     // Audio source, typically user's microphone
-    // source: web_sys::MediaStreamAudioSourceNode,
+    source: web_sys::MediaStreamAudioSourceNode,
 }
 
 #[wasm_bindgen]
 impl Spectrogram {
     #[wasm_bindgen(constructor)]
-    pub fn new() -> Result<Spectrogram, JsValue> {
+    pub fn new(stream: MediaStream) -> Result<Spectrogram, JsValue> {
         let ctx = web_sys::AudioContext::new()?;
+        // let ctx = web_sys::AudioContext::new_with_context_options({44100 })?;
 
         // Create our web audio objects.
         let gain = ctx.create_gain()?;
         let analyser = web_sys::AnalyserNode::new(&ctx)?;
-        // let stream = web_sys::MediaStream::new()?;
-        // let options = web_sys::MediaStreamAudioSourceOptions::new(&stream);
-        // let source = ctx.create_media_stream_source(&stream)?;
-        // let source = web_sys::MediaStreamAudioSourceNode::new(&ctx, &options);
 
         // Some initial settings:
-        gain.gain().set_value(50.0);
+        gain.gain().set_value(100.0);
 
-
+        let source = ctx.create_media_stream_source(&stream)?;
         // The audio source is routed through the gain node, so that
         // it can control the overall output volume.
-        // source.connect_with_audio_node(&gain)?;
+        source.connect_with_audio_node(&gain)?
+        .connect_with_audio_node(&analyser)
+        .expect("analyser connected");
 
         // Then connect the gain node to the AudioContext destination (aka
         // your speakers).
@@ -54,17 +60,22 @@ impl Spectrogram {
             ctx,
             gain,
             analyser,
-            // source,
+            source,
         })
     }
 
-    pub fn connect_user_mic(&self, stream: MediaStream) {
-        let source = self.ctx.create_media_stream_source(&stream)
-        .expect("source connected");
-        source.connect_with_audio_node(&self.gain)
-        .expect("gain connected")
-        .connect_with_audio_node(&self.analyser);
-        // source.connect(self.gain)?.connect(self.analyser);
+    pub fn disconnect_user_mic(&self) {
+        let _ = &self.source.disconnect();
+    }
+
+    pub fn get_frequency_data(&self) {
+        // let sampleRate: &f32 = &self.ctx.sample_rate();
+        // let valueArr: [Vec<i8>; sampleRate] = [];
+        // let mut frequency_data = Vec::new();
+        // let mut frequency_data: [i8; 44100] = [0; 44100];
+        let frequency_data: &mut [u8] = &mut[];
+        let _ = &self.analyser.get_byte_frequency_data(frequency_data);
+        log!("Frequency data: {:?}", &frequency_data);
     }
 }
 
