@@ -72,10 +72,11 @@ impl Spectrogram {
         // let sampleRate: &f32 = &self.ctx.sample_rate();
         // let valueArr: [Vec<i8>; sampleRate] = [];
         // let mut frequency_data = Vec::new();
-        // let mut frequency_data: [i8; 44100] = [0; 44100];
-        let frequency_data: &mut [u8] = &mut[];
-        let _ = &self.analyser.get_byte_frequency_data(frequency_data);
-        log!("Frequency data: {:?}", &frequency_data);
+        let mut frequency_data: [u8; 44100] = [5; 44100];
+        // let frequency_data: &mut [u8] = &mut[];
+        // let mut frequency_data = Vec::new();
+        self.analyser.get_byte_frequency_data(&mut frequency_data[0..44099]);
+        log!("Frequency data foo: {:?}", frequency_data);
     }
 }
 
