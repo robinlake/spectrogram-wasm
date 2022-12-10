@@ -29,6 +29,9 @@ pub struct Spectrogram {
 
     // Audio source, typically user's microphone
     source: web_sys::MediaStreamAudioSourceNode,
+
+    // Frequency domain values from analyser node
+    frequency_data: Vec<u8>,
 }
 
 #[wasm_bindgen]
@@ -43,7 +46,7 @@ impl Spectrogram {
         let analyser = web_sys::AnalyserNode::new(&ctx)?;
 
         // Some initial settings:
-        gain.gain().set_value(100.0);
+        gain.gain().set_value(50.0);
 
         let source = ctx.create_media_stream_source(&stream)?;
         // The audio source is routed through the gain node, so that
@@ -56,11 +59,14 @@ impl Spectrogram {
         // your speakers).
         gain.connect_with_audio_node(&ctx.destination())?;
 
+        let frequency_data: Vec<u8> = vec![0;44100];
+
         Ok(Spectrogram {
             ctx,
             gain,
             analyser,
             source,
+            frequency_data,
         })
     }
 
@@ -68,15 +74,10 @@ impl Spectrogram {
         let _ = &self.source.disconnect();
     }
 
-    pub fn get_frequency_data(&self) {
-        // let sampleRate: &f32 = &self.ctx.sample_rate();
-        // let valueArr: [Vec<i8>; sampleRate] = [];
-        // let mut frequency_data = Vec::new();
-        let mut frequency_data: [u8; 44100] = [5; 44100];
-        // let frequency_data: &mut [u8] = &mut[];
-        // let mut frequency_data = Vec::new();
-        self.analyser.get_byte_frequency_data(&mut frequency_data[0..44099]);
-        log!("Frequency data foo: {:?}", frequency_data);
+    pub fn get_frequency_data(&mut self) {
+        self.analyser.get_byte_frequency_data(&mut self.frequency_data[0..44099]);
+        log!("Frequency data foo: {:?}", self.frequency_data);
+        log!("Frequency data length: {}", self.frequency_data.len());
     }
 }
 
