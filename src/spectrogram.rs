@@ -75,53 +75,15 @@ impl Spectrogram {
     }
 
     pub fn push_frequency_data(&mut self) {
-        // let last = self.frequency_data.last()?;
-        // let mut sample: Vec<u8> = vec![0; 44100];
         let mut sample: Vec<u8> = vec![0; 128];
-        // let last_index = self.frequency_data.len() - 1;
-        // self.analyser.get_byte_frequency_data(&mut self.frequency_data[last_index][0..127]);
-        // self.analyser.get_byte_frequency_data(&mut self.frequency_data[0..44099]);
-        log!("Sample before get_byte..: {:#?}", sample);
         self.analyser.get_byte_frequency_data(&mut sample[0..]);
-        log!("Sample after get_byte..: {:#?}", sample);
         if self.frequency_data.len() < 100 {
-            log!("Frequency data before push: {:?}", &self.frequency_data);
-            // log!("Frequency data length before push: {}", self.frequency_data.len());
             self.frequency_data.push(sample);
-            log!("Frequency data after push: {:?}", &self.frequency_data);
-            // log!("Frequency data length after push: {}", self.frequency_data.len());
         }
-        // log!("Frequency data foo: {:#?}", sample);
     }
 
-    // pub fn push_frequency_data(&mut self) {
-    //     // let last = self.frequency_data.last()?;
-    //     // let mut sample: Vec<u8> = vec![0; 44100];
-    //     let mut sample: Vec<u8> = vec![0; 128];
-    //     let last_index = self.frequency_data.len() - 1;
-    //     self.analyser.get_byte_frequency_data(&mut self.frequency_data[last_index][0..127]);
-    //     // self.analyser.get_byte_frequency_data(&mut self.frequency_data[0..44099]);
-    //     log!("Sample before get_byte..: {:#?}", sample);
-    //     self.analyser.get_byte_frequency_data(&mut sample[0..]);
-    //     log!("Sample after get_byte..: {:#?}", sample);
-    //     if self.frequency_data.len() < 100 {
-    //         self.frequency_data.push(sample);
-    //     }
-    //     // log!("Frequency data foo: {:#?}", sample);
-    //     // log!("Frequency data foo: {:?}", self.frequency_data);
-    //     // log!("Frequency data length: {}", self.frequency_data.len());
-    // }
-
     pub fn get_frequency_data(&mut self) {
-        // let last = self.frequency_data.last()?;
-        // let mut sample: Vec<u8> = vec![0; 44100];
-        // // self.analyser.get_byte_frequency_data(&mut self.frequency_data[0..44099]);
-        // self.analyser.get_byte_frequency_data(&mut sample[0..44099]);
-        // // if self.frequency_data.len() < 100 {
-        // //     self.frequency_data.push(sample);
-        // // }
-        // log!("Frequency data foo: {:#?}", sample);
-        log!("Frequency data foo: {:?}", self.frequency_data);
         log!("Frequency data length: {}", self.frequency_data.len());
+        log!("Frequency data: {:?}", self.frequency_data);
     }
 }
