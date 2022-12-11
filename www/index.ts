@@ -47,49 +47,49 @@ const pushAnalyserValues = () => {
 const pushAnalyserButton = document.getElementById("push-analyser-values");
 pushAnalyserButton.addEventListener('click', pushAnalyserValues)
 
-const play_button = document.getElementById("play");
-play_button.addEventListener("click", event => {
-    if (fm === null) {
-    fm = new sp.FmOsc();
-    fm.set_note(50);
-    fm.set_fm_frequency(0);
-    fm.set_fm_amount(0);
-    fm.set_gain(0.8);
-    } else {
-    fm.free();
-    fm = null;
-    }
-});
+// const play_button = document.getElementById("play");
+// play_button.addEventListener("click", event => {
+//     if (fm === null) {
+//     fm = new sp.FmOsc();
+//     fm.set_note(50);
+//     fm.set_fm_frequency(0);
+//     fm.set_fm_amount(0);
+//     fm.set_gain(0.8);
+//     } else {
+//     fm.free();
+//     fm = null;
+//     }
+// });
 
-interface EventTargetWithValue extends EventTarget {
-    value: string;
-}
+// interface EventTargetWithValue extends EventTarget {
+//     value: string;
+// }
 
-interface InputEventWithValue extends InputEvent {
-    target: EventTargetWithValue;
-}
+// interface InputEventWithValue extends InputEvent {
+//     target: EventTargetWithValue;
+// }
 
-const primary_slider: HTMLInputElement = document.getElementById("primary_input") as HTMLInputElement;
-const handleSliderInput = (event: InputEventWithValue) => {
-    if (fm) {
-        fm.set_note(parseInt(event.target.value));
-    }
-    }
-primary_slider.addEventListener("input", handleSliderInput);
+// const primary_slider: HTMLInputElement = document.getElementById("primary_input") as HTMLInputElement;
+// const handleSliderInput = (event: InputEventWithValue) => {
+//     if (fm) {
+//         fm.set_note(parseInt(event.target.value));
+//     }
+//     }
+// primary_slider.addEventListener("input", handleSliderInput);
 
-const fm_freq = document.getElementById("fm_freq");
-const handleFmFreq = (event: InputEventWithValue) => {
-    if (fm && event.target.value) {
-        fm.set_fm_frequency(parseFloat(event.target.value));
-    }
-    }
-fm_freq.addEventListener("input", handleFmFreq);
+// const fm_freq = document.getElementById("fm_freq");
+// const handleFmFreq = (event: InputEventWithValue) => {
+//     if (fm && event.target.value) {
+//         fm.set_fm_frequency(parseFloat(event.target.value));
+//     }
+//     }
+// fm_freq.addEventListener("input", handleFmFreq);
 
-const fm_amount = document.getElementById("fm_amount");
-const handleFmAmount = (event: InputEventWithValue) => {
-    if (fm) {
-        fm.set_fm_amount(parseFloat(event.target.value));
-    }
-    };
+// const fm_amount = document.getElementById("fm_amount");
+// const handleFmAmount = (event: InputEventWithValue) => {
+//     if (fm) {
+//         fm.set_fm_amount(parseFloat(event.target.value));
+//     }
+//     };
 
-fm_amount.addEventListener("input", handleFmAmount);
+// fm_amount.addEventListener("input", handleFmAmount);
