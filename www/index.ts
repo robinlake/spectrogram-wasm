@@ -2,7 +2,14 @@ import * as sp from "spectrogram-wasm";
 
 let fm: any = null;
 let spectrogram: sp.Spectrogram = null;
-sp.init_canvas();
+
+    sp.init_canvas();
+// const initCanvas = () => {
+    //     sp.init_canvas();
+// }
+
+// const initCanvasButton = document.getElementById("init-canvas");
+// initCanvasButton.addEventListener('click', initCanvas)
 
 const startSpectrogram = async () => {
     const mic = await navigator.mediaDevices.getUserMedia({

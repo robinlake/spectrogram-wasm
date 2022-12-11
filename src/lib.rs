@@ -7,7 +7,8 @@ mod ui;
 
 #[wasm_bindgen]
 pub fn init_canvas() {
-    ui::run();
+    // ui::run();
+    pollster::block_on(ui::run());
 }
 
 // use wasm_bindgen::prelude::*;
