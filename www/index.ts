@@ -37,6 +37,16 @@ const getAnalyserValues = () => {
 const analyserButton = document.getElementById("analyser-values");
 analyserButton.addEventListener('click', getAnalyserValues)
 
+const pushAnalyserValues = () => {
+    spectrogram?.push_frequency_data();
+    // let values = new Uint8Array;
+    // const analyser = spectrogram.analyser;
+    // analyser?.getByteTimeDomainData(values);
+    // console.log("values: ", values);
+}
+const pushAnalyserButton = document.getElementById("push-analyser-values");
+pushAnalyserButton.addEventListener('click', pushAnalyserValues)
+
 const play_button = document.getElementById("play");
 play_button.addEventListener("click", event => {
     if (fm === null) {

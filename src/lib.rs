@@ -31,7 +31,7 @@ pub struct Spectrogram {
     source: web_sys::MediaStreamAudioSourceNode,
 
     // Frequency domain values from analyser node
-    frequency_data: Vec<u8>,
+    frequency_data: Vec<Vec<u8>>,
 }
 
 #[wasm_bindgen]
@@ -46,7 +46,7 @@ impl Spectrogram {
         let analyser = web_sys::AnalyserNode::new(&ctx)?;
 
         // Some initial settings:
-        gain.gain().set_value(50.0);
+        gain.gain().set_value(20.0);
 
         let source = ctx.create_media_stream_source(&stream)?;
         // The audio source is routed through the gain node, so that
@@ -57,9 +57,9 @@ impl Spectrogram {
 
         // Then connect the gain node to the AudioContext destination (aka
         // your speakers).
-        gain.connect_with_audio_node(&ctx.destination())?;
+        // gain.connect_with_audio_node(&ctx.destination())?;
 
-        let frequency_data: Vec<u8> = vec![0;44100];
+        let frequency_data: Vec<Vec<u8>> = vec![vec![0;128]];
 
         Ok(Spectrogram {
             ctx,
@@ -74,8 +74,31 @@ impl Spectrogram {
         let _ = &self.source.disconnect();
     }
 
+    pub fn push_frequency_data(&mut self) {
+        // let last = self.frequency_data.last()?;
+        // let mut sample: Vec<u8> = vec![0; 44100];
+        let mut sample: Vec<u8> = vec![0; 128];
+        let last_index = self.frequency_data.len() - 1;
+        self.analyser.get_byte_frequency_data(&mut self.frequency_data[last_index][0..127]);
+        // self.analyser.get_byte_frequency_data(&mut self.frequency_data[0..44099]);
+        self.analyser.get_byte_frequency_data(&mut sample[0..127]);
+        if self.frequency_data.len() < 100 {
+            self.frequency_data.push(sample);
+        }
+        // log!("Frequency data foo: {:#?}", sample);
+        // log!("Frequency data foo: {:?}", self.frequency_data);
+        // log!("Frequency data length: {}", self.frequency_data.len());
+    }
+
     pub fn get_frequency_data(&mut self) {
-        self.analyser.get_byte_frequency_data(&mut self.frequency_data[0..44099]);
+        // let last = self.frequency_data.last()?;
+        // let mut sample: Vec<u8> = vec![0; 44100];
+        // // self.analyser.get_byte_frequency_data(&mut self.frequency_data[0..44099]);
+        // self.analyser.get_byte_frequency_data(&mut sample[0..44099]);
+        // // if self.frequency_data.len() < 100 {
+        // //     self.frequency_data.push(sample);
+        // // }
+        // log!("Frequency data foo: {:#?}", sample);
         log!("Frequency data foo: {:?}", self.frequency_data);
         log!("Frequency data length: {}", self.frequency_data.len());
     }
