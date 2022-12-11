@@ -1,6 +1,14 @@
 #![allow(dead_code)]
+use wasm_bindgen::prelude::*;
+
 mod utils;
 mod spectrogram;
+mod ui;
+
+#[wasm_bindgen]
+pub fn init_canvas() {
+    ui::run();
+}
 
 // use wasm_bindgen::prelude::*;
 // use web_sys::{AudioContext, OscillatorType, AnalyserNode, MediaStream, MediaStreamAudioSourceNode, MediaStreamAudioSourceOptions, console};
