@@ -60,6 +60,7 @@ impl Spectrogram {
         // gain.connect_with_audio_node(&ctx.destination())?;
 
         let frequency_data: Vec<Vec<u8>> = vec![vec![0;128]];
+        log!("Spectrogram created successfully");
 
         Ok(Spectrogram {
             ctx,
@@ -85,5 +86,9 @@ impl Spectrogram {
     pub fn get_frequency_data(&mut self) {
         log!("Frequency data length: {}", self.frequency_data.len());
         log!("Frequency data: {:?}", self.frequency_data);
+    }
+
+    pub fn tick(&mut self) {
+        self.push_frequency_data();
     }
 }

@@ -2,10 +2,17 @@ import * as sp from "spectrogram-wasm";
 
 let fm: any = null;
 let spectrogram: sp.Spectrogram = null;
+let animationId = null;
 
-sp.init_canvas();
+// sp.init_canvas();
+
+const renderLoop = () => {
+    spectrogram.tick();
+    animationId = requestAnimationFrame(renderLoop);
+}
 
 const startSpectrogram = async () => {
+    // console.log("spectrogram starting");
     const mic = await navigator.mediaDevices.getUserMedia({
         audio: true,
     })
@@ -13,6 +20,7 @@ const startSpectrogram = async () => {
     spectrogram = new sp.Spectrogram(mic);
     // console.log("spectrogram: ", spectrogram);
     // spectrogram.connect_user_mic(mic);
+    renderLoop();
 }
 
 const startSpectrogramButton = document.getElementById("start-spectrogram");
@@ -24,6 +32,8 @@ const stopSpectrogram = () => {
     } else {
         debugger;
     }
+    cancelAnimationFrame(animationId);
+    animationId = null;
 }
 
 const stopSpectrogramButton = document.getElementById("stop-spectrogram");
