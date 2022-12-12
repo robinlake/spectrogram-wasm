@@ -225,7 +225,6 @@ impl State {
     fn input(&mut self, event: &WindowEvent) -> bool {
         match event {
             WindowEvent::CursorMoved { position, .. } => {
-                log!("cursor moved");
                 self.clear_color = wgpu::Color {
                     r: position.x as f64 / self.size.width as f64,
                     g: position.y as f64 / self.size.height as f64,
@@ -328,8 +327,6 @@ pub async fn run() {
                 window_id,
             } if window_id == window.id() => {
                 if !state.input(event) {
-                    log!("no event detected");
-                    log!("event?: {:?}", event);
                     match event {
                         WindowEvent::CloseRequested
                         | WindowEvent::KeyboardInput {
@@ -342,13 +339,8 @@ pub async fn run() {
                             ..
                         } => *control_flow = ControlFlow::Exit,
                         WindowEvent::Resized(physical_size) => {
-                            log!("resize");
                             state.resize(*physical_size);
                         }
-                        // WindowEvent::CursorMoved(physical_size) => {
-                        //     log!("resize");
-                        //     state.resize(*physical_size);
-                        // }
                         WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
                             // new_inner_size is &mut so w have to dereference it twice
                             state.resize(**new_inner_size);
