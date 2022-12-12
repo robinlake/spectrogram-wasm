@@ -4,12 +4,18 @@ let fm: any = null;
 let spectrogram: sp.Spectrogram = null;
 let animationId = null;
 
-// sp.init_canvas();
 
 const renderLoop = () => {
     spectrogram.tick();
     animationId = requestAnimationFrame(renderLoop);
 }
+
+const initializeCanvas = async () => {
+    sp.init_canvas();
+}
+
+const initializeCanvasButton = document.getElementById("initialize-canvas");
+initializeCanvasButton.addEventListener('click', initializeCanvas);
 
 const startSpectrogram = async () => {
     // console.log("spectrogram starting");
