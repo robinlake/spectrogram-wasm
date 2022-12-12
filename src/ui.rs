@@ -10,6 +10,12 @@ use winit::{
 #[cfg(target_arch="wasm32")]
 use wasm_bindgen::prelude::*;
 
+// A macro to provide `println!(..)`-style syntax for `console.log` logging.
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
 struct Vertex {
@@ -74,6 +80,7 @@ struct State {
     vertex_buffer: wgpu::Buffer,
     index_buffer: wgpu::Buffer,
     num_indices: u32,
+    clear_color: wgpu::Color,
 }
 
 impl State {
@@ -188,6 +195,8 @@ impl State {
             usage: wgpu::BufferUsages::INDEX,
         });
         let num_indices = INDICES.len() as u32;
+        let clear_color = wgpu::Color::BLACK;
+
 
         Self {
             surface,
@@ -199,6 +208,7 @@ impl State {
             vertex_buffer,
             index_buffer,
             num_indices,
+            clear_color,
         }
     }
 
@@ -213,7 +223,19 @@ impl State {
 
     #[allow(unused_variables)]
     fn input(&mut self, event: &WindowEvent) -> bool {
-        false
+        match event {
+            WindowEvent::CursorMoved { position, .. } => {
+                log!("cursor moved");
+                self.clear_color = wgpu::Color {
+                    r: position.x as f64 / self.size.width as f64,
+                    g: position.y as f64 / self.size.height as f64,
+                    b: 1.0,
+                    a: 1.0,
+                };
+                true
+            }
+            _ => false,
+        }
     }
 
     fn update(&mut self) {}
@@ -237,12 +259,13 @@ impl State {
                     view: &view,
                     resolve_target: None,
                     ops: wgpu::Operations {
-                        load: wgpu::LoadOp::Clear(wgpu::Color {
-                            r: 0.1,
-                            g: 0.2,
-                            b: 0.3,
-                            a: 1.0,
-                        }),
+                        load: wgpu::LoadOp::Clear(self.clear_color),
+                        // load: wgpu::LoadOp::Clear(wgpu::Color {
+                        //     r: 0.1,
+                        //     g: 0.2,
+                        //     b: 0.3,
+                        //     a: 1.0,
+                        // }),
                         store: true,
                     },
                 })],
@@ -305,6 +328,8 @@ pub async fn run() {
                 window_id,
             } if window_id == window.id() => {
                 if !state.input(event) {
+                    log!("no event detected");
+                    log!("event?: {:?}", event);
                     match event {
                         WindowEvent::CloseRequested
                         | WindowEvent::KeyboardInput {
@@ -317,8 +342,13 @@ pub async fn run() {
                             ..
                         } => *control_flow = ControlFlow::Exit,
                         WindowEvent::Resized(physical_size) => {
+                            log!("resize");
                             state.resize(*physical_size);
                         }
+                        // WindowEvent::CursorMoved(physical_size) => {
+                        //     log!("resize");
+                        //     state.resize(*physical_size);
+                        // }
                         WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
                             // new_inner_size is &mut so w have to dereference it twice
                             state.resize(**new_inner_size);
