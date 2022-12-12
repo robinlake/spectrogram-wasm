@@ -3,6 +3,7 @@ import * as sp from "spectrogram-wasm";
 let fm: any = null;
 let spectrogram: sp.Spectrogram = null;
 let animationId = null;
+(() => {sp.init_canvas(); console.log("foo")})();
 
 
 const renderLoop = () => {

@@ -3,6 +3,10 @@ name = "spectrogram-wasm"
 version = "0.1.2"
 authors = ["Robin Lake <robin@robinlake.ca>"]
 edition = "2021"
+wasm-opt = false
+
+[package.metadata.wasm-pack.profile.dev]
+wasm-opt = false
 
 [lib]
 crate-type = ["cdylib", "rlib"]
