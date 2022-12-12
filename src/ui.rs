@@ -76,11 +76,13 @@ struct State {
     config: wgpu::SurfaceConfiguration,
     size: winit::dpi::PhysicalSize<u32>,
     render_pipeline: wgpu::RenderPipeline,
+    challenge_render_pipeline: wgpu::RenderPipeline,
     // NEW!
     vertex_buffer: wgpu::Buffer,
     index_buffer: wgpu::Buffer,
     num_indices: u32,
     clear_color: wgpu::Color,
+    use_color: bool,
 }
 
 impl State {
@@ -184,6 +186,49 @@ impl State {
             multiview: None,
         });
 
+        let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
+            label: Some("Challenge Shader"),
+            source: wgpu::ShaderSource::Wgsl(include_str!("challenge.wgsl").into()),
+        });
+
+        let challenge_render_pipeline =
+            device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+                label: Some("Render Pipeline"),
+                layout: Some(&render_pipeline_layout),
+                vertex: wgpu::VertexState {
+                    module: &shader,
+                    entry_point: "vs_main",
+                    buffers: &[],
+                },
+                fragment: Some(wgpu::FragmentState {
+                    module: &shader,
+                    entry_point: "fs_main",
+                    targets: &[Some(wgpu::ColorTargetState {
+                        format: config.format,
+                        blend: Some(wgpu::BlendState::REPLACE),
+                        write_mask: wgpu::ColorWrites::ALL,
+                    })],
+                }),
+                primitive: wgpu::PrimitiveState {
+                    topology: wgpu::PrimitiveTopology::TriangleList,
+                    strip_index_format: None,
+                    front_face: wgpu::FrontFace::Ccw,
+                    cull_mode: Some(wgpu::Face::Back),
+                    // Setting this to anything other than Fill requires Features::NON_FILL_POLYGON_MODE
+                    polygon_mode: wgpu::PolygonMode::Fill,
+                    ..Default::default()
+                },
+                depth_stencil: None,
+                multisample: wgpu::MultisampleState {
+                    count: 1,
+                    mask: !0,
+                    alpha_to_coverage_enabled: false,
+                },
+                // If the pipeline will be used with a multiview render pass, this
+                // indicates how many array layers the attachments will have.
+                multiview: None,
+            });
+
         let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
             label: Some("Vertex Buffer"),
             contents: bytemuck::cast_slice(VERTICES),
@@ -196,6 +241,7 @@ impl State {
         });
         let num_indices = INDICES.len() as u32;
         let clear_color = wgpu::Color::BLACK;
+        let use_color = true;
 
 
         Self {
@@ -205,10 +251,12 @@ impl State {
             config,
             size,
             render_pipeline,
+            challenge_render_pipeline,
             vertex_buffer,
             index_buffer,
             num_indices,
             clear_color,
+            use_color,
         }
     }
 
@@ -231,6 +279,19 @@ impl State {
                     b: 1.0,
                     a: 1.0,
                 };
+                true
+            }
+            // _ => false,
+            WindowEvent::KeyboardInput {
+                input:
+                    KeyboardInput {
+                        state,
+                        virtual_keycode: Some(VirtualKeyCode::Space),
+                        ..
+                    },
+                ..
+            } => {
+                self.use_color = *state == ElementState::Released;
                 true
             }
             _ => false,
@@ -271,7 +332,12 @@ impl State {
                 depth_stencil_attachment: None,
             });
 
-            render_pass.set_pipeline(&self.render_pipeline);
+            // render_pass.set_pipeline(&self.render_pipeline);
+            render_pass.set_pipeline(if self.use_color {
+                &self.render_pipeline
+            } else {
+                &self.challenge_render_pipeline
+            });
             render_pass.set_vertex_buffer(0, self.vertex_buffer.slice(..));
             render_pass.set_index_buffer(self.index_buffer.slice(..), wgpu::IndexFormat::Uint16);
             render_pass.draw_indexed(0..self.num_indices, 0, 0..1);
