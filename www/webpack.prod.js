@@ -1,6 +1,22 @@
-const { merge } = require('webpack-merge');
-const common = require('./webpack.common.js');
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const path = require('path');
 
-module.exports = merge(common, {
-  mode: 'production',
-});
+module.exports = {
+  entry: "./bootstrap.ts",
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js', '.wasm'],
+  },
+  output: {
+    path: path.resolve(__dirname, "dist"),
+    filename: "bootstrap.js",
+  },
+  mode: "production",
+  plugins: [
+    new CopyWebpackPlugin(['index.html'])
+  ],
+  experiments: {
+    asyncWebAssembly: true,
+    lazyCompilation: true,
+    syncWebAssembly: true,
+  },
+};
