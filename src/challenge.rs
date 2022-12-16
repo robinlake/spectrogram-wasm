@@ -222,7 +222,7 @@ impl State {
 
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("Shader"),
-            source: wgpu::ShaderSource::Wgsl(include_str!("shader.wgsl").into()),
+            source: wgpu::ShaderSource::Wgsl(include_str!("challenge.wgsl").into()),
         });
 
 
@@ -426,12 +426,12 @@ impl State {
                 depth_stencil_attachment: None,
             });
 
-            render_pass.set_pipeline(&self.render_pipeline);
-            // render_pass.set_pipeline(if self.use_color {
-            //     &self.render_pipeline
-            // } else {
-            //     &self.challenge_render_pipeline
-            // });
+            // render_pass.set_pipeline(&self.render_pipeline);
+            render_pass.set_pipeline(if self.use_color {
+                &self.render_pipeline
+            } else {
+                &self.challenge_render_pipeline
+            });
             render_pass.set_bind_group(0, &self.diffuse_bind_group, &[]); // NEW!
             render_pass.set_vertex_buffer(0, self.vertex_buffer.slice(..));
             render_pass.set_index_buffer(self.index_buffer.slice(..), wgpu::IndexFormat::Uint16);

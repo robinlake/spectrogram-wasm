@@ -3,12 +3,14 @@ use wasm_bindgen::prelude::*;
 
 mod utils;
 pub mod spectrogram;
-mod ui;
+// mod ui;
+mod challenge;
 
 #[wasm_bindgen]
 pub fn init_canvas() {
     // ui::run();
-    pollster::block_on(ui::run());
+    pollster::block_on(challenge::run());
+    // pollster::block_on(ui::run());
 }
 
 // /*

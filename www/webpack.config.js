@@ -14,6 +14,10 @@ module.exports = {
       },
     ],
   },
+  devServer: {
+    static: './dist',
+    hot: true,
+  },
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.wasm'],
   },
